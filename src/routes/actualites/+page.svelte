@@ -276,10 +276,27 @@
   font-weight: 600;
   white-space: nowrap;
   transition: all var(--duration-normal) var(--ease-out);
+  flex-shrink: 0;
 }
 .nl-btn:hover {
   background: var(--clr-primary-dim);
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
+}
+
+@media (max-width: 640px) {
+  .newsletter-cta {
+    flex-direction: column;
+    align-items: stretch;
+    padding: var(--space-6);
+  }
+  .nl-btn {
+    white-space: normal;
+    text-align: center;
+    justify-content: center;
+    width: 100%;
+  }
+  .fa-visual { min-height: 200px; }
+  .fa-content { padding: var(--space-6); }
 }
 </style>
