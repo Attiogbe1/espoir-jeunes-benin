@@ -409,6 +409,18 @@
 .lb-nav-btn:hover { background: rgba(255,255,255,0.3); }
 
 @media (max-width: 640px) {
+  .masonry-grid { columns: 2; column-gap: var(--space-3); }
+}
+
+@media (max-width: 400px) {
   .masonry-grid { columns: 1; }
+}
+
+@media (max-width: 640px) {
+  .lb-visual { height: 220px; }
+  .lb-info { padding: var(--space-4) var(--space-5); }
+  .lightbox-content { width: 95%; border-radius: var(--radius-lg); }
+  .filters { gap: var(--space-2); }
+  .filter-btn { padding: 0.4rem 0.875rem; font-size: var(--text-xs); }
 }
 </style>

@@ -52,6 +52,20 @@
   overflow: hidden;
 }
 
+@media (max-width: 640px) {
+  .page-header {
+    padding-top: calc(var(--nav-h) + var(--space-8));
+    padding-bottom: var(--space-10);
+  }
+  h1 {
+    font-size: clamp(var(--text-2xl), 8vw, var(--text-4xl));
+    line-height: 1.15;
+  }
+  .ph-subtitle {
+    font-size: var(--text-base);
+  }
+}
+
 .page-header-bg {
   position: absolute;
   inset: 0;

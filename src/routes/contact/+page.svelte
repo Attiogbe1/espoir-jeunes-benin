@@ -257,6 +257,12 @@
   box-shadow: var(--shadow-md);
 }
 
+@media (max-width: 480px) {
+  .form-wrapper { padding: var(--space-5); border-radius: var(--radius-lg); }
+  .submit-btn { width: 100%; }
+  .contact-info { position: static; }
+}
+
 form {
   display: flex;
   flex-direction: column;

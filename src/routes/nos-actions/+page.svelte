@@ -127,6 +127,14 @@
   .program-grid.reverse > :last-child { order: 2; }
 }
 
+@media (max-width: 640px) {
+  .program-grid { gap: var(--space-8); }
+  .prog-visual { min-height: 260px; }
+  .prog-num { font-size: 2.5rem; }
+  .prog-icon { font-size: 3.5rem; }
+  .prog-stats-grid { grid-template-columns: 1fr 1fr; }
+}
+
 /* Visual */
 .prog-visual {
   position: relative;

@@ -328,6 +328,13 @@
   font-weight: 600;
 }
 
+@media (max-width: 480px) {
+  .chart-wrapper { padding: var(--space-5) var(--space-4); }
+  .bar-chart { gap: var(--space-3); height: 180px; }
+  .bar-value { font-size: var(--text-base); }
+  .bar-year  { font-size: var(--text-xs); }
+}
+
 /* Map */
 .map-section { background: var(--clr-white); }
 

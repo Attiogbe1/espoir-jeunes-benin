@@ -335,4 +335,13 @@ p  { font-size: clamp(var(--text-base), 1.5vw, var(--text-lg)); line-height: 1.7
 
 @media (max-width: 640px) {
   .section { padding-block: var(--space-16); }
+  .section-sm { padding-block: var(--space-12); }
+}
+
+@media (max-width: 480px) {
+  :root { --nav-h: 64px; }
+  .section    { padding-block: var(--space-12); }
+  .section-sm { padding-block: var(--space-8); }
+  h1 { font-size: clamp(var(--text-3xl), 9vw, var(--text-5xl)); }
+  h2 { font-size: clamp(var(--text-2xl), 7vw, var(--text-3xl)); }
 }
