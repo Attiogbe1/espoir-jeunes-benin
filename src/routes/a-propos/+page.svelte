@@ -312,7 +312,7 @@
   transform: translateX(-50%);
 }
 @media (max-width: 640px) {
-  .timeline-line { left: 20px; }
+  .timeline-line { left: 22px; }
 }
 
 .timeline-item {
@@ -391,11 +391,18 @@
 
 @media (max-width: 640px) {
   .timeline-item {
-    grid-template-columns: 40px 1fr;
+    grid-template-columns: 44px 1fr;
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
   }
   .timeline-item .tl-spacer { display: none; }
+  /* Dot toujours en colonne 1, contenu en colonne 2 */
+  .timeline-item .tl-dot    { order: 1; }
+  .timeline-item .tl-content { order: 2; }
+  /* Annuler les overrides desktop pour les items .right */
   .timeline-item.right .tl-content { order: 2; }
-  .timeline-item.right .tl-dot { order: 1; }
+  .timeline-item.right .tl-dot    { order: 1; }
+  .tl-content { padding: var(--space-4); }
 }
 
 /* Founder */
