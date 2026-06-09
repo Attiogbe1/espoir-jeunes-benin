@@ -5,6 +5,7 @@
   import Navbar from '$lib/components/layout/Navbar.svelte';
   import Footer from '$lib/components/layout/Footer.svelte';
   import type { Snippet } from 'svelte';
+  import { PUBLIC_WHATSAPP } from '$env/static/public';
 
   let { children }: { children: Snippet } = $props();
 
@@ -45,7 +46,7 @@
   <Footer />
 
   <a
-    href="https://wa.me/229XXXXXXXX"
+    href="https://wa.me/{PUBLIC_WHATSAPP}"
     class="whatsapp-fab"
     target="_blank"
     rel="noopener noreferrer"
