@@ -168,11 +168,34 @@
         ]}
         <ScrollReveal direction="up" delay={i * 80}>
           <div class="team-card">
-            <div class="tc-avatar" style="background: {avatarGradients[i % avatarGradients.length]}">
-              {member.initials}
+            <div class="tc-photo-wrap">
+              {#if member.photo}
+                <img
+                  class="tc-photo"
+                  src={member.photo}
+                  alt="Photo de {member.name}"
+                  loading="lazy"
+                  onerror={(e) => {
+                    (e.currentTarget as HTMLImageElement).style.display = 'none';
+                    const fallback = (e.currentTarget as HTMLElement).nextElementSibling as HTMLElement;
+                    if (fallback) fallback.style.display = 'flex';
+                  }}
+                />
+                <div class="tc-avatar tc-avatar-fallback" style="background: {avatarGradients[i % avatarGradients.length]}; display: none">
+                  {member.initials}
+                </div>
+              {:else}
+                <div class="tc-avatar" style="background: {avatarGradients[i % avatarGradients.length]}">
+                  {member.initials}
+                </div>
+              {/if}
             </div>
             <h4>{member.name}</h4>
-            <span>{member.role}</span>
+            <span class="tc-role">{member.role}</span>
+            <p class="tc-quote">"{member.quote}"</p>
+            <a href="/a-propos/{member.slug}" class="tc-link">
+              Voir le profil →
+            </a>
           </div>
         </ScrollReveal>
       {/each}
@@ -505,6 +528,9 @@
   transition: transform var(--duration-normal) var(--ease-spring), box-shadow var(--duration-normal);
   position: relative;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 .team-card::after {
   content: '';
@@ -522,19 +548,39 @@
 .team-card:nth-child(5) { border-top-color: #7C3AED; }
 .team-card:nth-child(6) { border-top-color: #0891B2; }
 
-.tc-avatar {
-  width: 72px;
-  height: 72px;
+.tc-photo-wrap {
+  margin-inline: auto;
+  margin-bottom: var(--space-4);
+  width: 96px;
+  height: 96px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--clr-primary), var(--clr-primary-muted));
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+
+.tc-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.tc-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: var(--text-lg);
+  font-size: var(--text-xl);
   font-weight: 700;
   color: white;
-  margin-inline: auto;
-  margin-bottom: var(--space-4);
+}
+
+.tc-avatar-fallback {
+  width: 100%;
+  height: 100%;
 }
 
 .team-card h4 {
@@ -543,9 +589,49 @@
   margin-bottom: var(--space-1);
   color: var(--clr-dark);
 }
-.team-card span {
+
+.tc-role {
   font-size: var(--text-xs);
+  color: var(--clr-primary);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-3);
+  display: block;
+}
+
+.tc-quote {
+  font-size: var(--text-sm);
   color: var(--clr-muted);
+  font-style: italic;
+  line-height: 1.55;
+  margin-bottom: var(--space-5);
+  flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.tc-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--clr-primary);
+  text-decoration: none;
+  padding: var(--space-2) var(--space-4);
+  border: 1.5px solid var(--clr-primary);
+  border-radius: 100px;
+  transition: background var(--duration-fast), color var(--duration-fast);
+  position: relative;
+  z-index: 1;
+}
+.tc-link:hover {
+  background: var(--clr-primary);
+  color: white;
 }
 
 /* Counters (reused) */
