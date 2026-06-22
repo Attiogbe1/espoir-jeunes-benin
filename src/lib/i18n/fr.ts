@@ -95,7 +95,7 @@ export const fr = {
     founder_label: 'Le fondateur',
     founder_role: 'Fondateur & Directeur',
     founder_quote: "Je crois profondément que chaque élève porte en lui un potentiel qui n'attend que les bonnes conditions pour s'épanouir. ESPOIR JEUNES BÉNIN est née de cette conviction.",
-    founder_bio: "ATTIOGBE K. Emile est originaire d'Aplahoué, dans le département du Couffo au Bénin. Animé par un profond engagement pour l'éducation, il a créé ESPOIR JEUNES BÉNIN pour concrétiser sa vision d'une jeunesse outillée et confiante.",
+    founder_bio: "Emile ATTIOGBE est titulaire d'une Licence en Génie Logiciel de l'IFRI (Institut de Formation et de Recherche en Informatique) de l'Université d'Abomey-Calavi. Alumni de la Fondation Mastercard, ancien bénéficiaire du programme FAST (Fund for Alumni Start-ups in Transition) et actuellement stagiaire du programme Associates de la Fondation Mastercard, il a fondé ESPOIR JEUNES BÉNIN en 2021 à Aplahoué pour mettre son parcours au service de l'éducation des jeunes béninois.",
   },
   contact: {
     label: 'Nous contacter',
