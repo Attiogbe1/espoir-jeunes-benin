@@ -8,7 +8,6 @@
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Bonjour' : hour < 19 ? 'Bon après-midi' : 'Bonsoir';
 
-  /* ── Counter animation ── */
   let displayTotal     = $state(0);
   let displayPublished = $state(0);
   let displayDrafts    = $state(0);
@@ -20,8 +19,7 @@
       const t0 = performance.now();
       const tick = (now: number) => {
         const p = Math.min((now - t0) / duration, 1);
-        const eased = 1 - Math.pow(1 - p, 3);
-        setter(Math.round(eased * target));
+        setter(Math.round((1 - Math.pow(1 - p, 3)) * target));
         if (p < 1) requestAnimationFrame(tick);
       };
       requestAnimationFrame(tick);
@@ -29,80 +27,89 @@
   }
 
   onMount(() => {
-    countUp(data.total,          v => { displayTotal     = v; }, 900, 350);
-    countUp(data.published,      v => { displayPublished = v; }, 900, 480);
-    countUp(data.drafts,         v => { displayDrafts    = v; }, 900, 610);
-    countUp(data.unreadMessages, v => { displayMessages  = v; }, 900, 740);
+    countUp(data.total,          v => { displayTotal     = v; }, 900, 300);
+    countUp(data.published,      v => { displayPublished = v; }, 900, 420);
+    countUp(data.drafts,         v => { displayDrafts    = v; }, 900, 540);
+    countUp(data.unreadMessages, v => { displayMessages  = v; }, 900, 660);
   });
+
+  const typeLabels: Record<string, string> = {
+    partenariat: 'Partenariat',
+    benevole:    'Bénévolat',
+    don:         'Don',
+    presse:      'Presse',
+    autre:       'Autre',
+  };
+
+  const pubRate = $derived(data.total > 0 ? Math.round((data.published / data.total) * 100) : 0);
 </script>
 
 <svelte:head><title>Tableau de bord — Admin EJB</title></svelte:head>
 
-<!-- ── En-tête ──────────────────────────────────────── -->
+<!-- ── En-tête ──────────────────────────────────── -->
 <div class="page-top">
-  <div class="top-left">
-    <p class="top-greeting">{greeting} 👋</p>
-    <h1 class="top-title">Tableau de bord</h1>
-    <div class="title-line" aria-hidden="true"></div>
+  <div>
+    <p class="greeting">{greeting} 👋</p>
+    <h1 class="title">Tableau de bord</h1>
+    <div class="title-bar"></div>
   </div>
   <a href="/admin/evenements/nouveau" class="cta-btn">
-    <span class="cta-icon" aria-hidden="true">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-    </span>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
     Nouvel événement
   </a>
 </div>
 
-<!-- ── KPI cards ─────────────────────────────────────── -->
+<!-- ── KPI ───────────────────────────────────────── -->
 <div class="kpi-row">
-  <div class="kpi-card kpi-card--green">
-    <div class="kpi-glow kpi-glow--green" aria-hidden="true"></div>
+  <div class="kpi kpi--green">
+    <div class="kpi-glow kpi-glow--green"></div>
     <div class="kpi-icon">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
     </div>
     <div class="kpi-body">
       <span class="kpi-num">{displayTotal}</span>
-      <span class="kpi-label">Événements</span>
+      <span class="kpi-lbl">Total événements</span>
     </div>
-    <div class="kpi-spark" aria-hidden="true">
-      <svg width="52" height="30" viewBox="0 0 52 30" fill="none">
-        <polyline class="spark-fill" points="0,26 10,20 20,15 32,9 52,2 52,30 0,30" fill="rgba(34,197,94,0.08)"/>
-        <polyline class="spark-line" points="0,26 10,20 20,15 32,9 52,2" stroke="#22C55E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-      </svg>
-    </div>
+    <svg class="kpi-spark" width="56" height="28" viewBox="0 0 56 28" fill="none">
+      <polyline class="spark-fill" points="0,24 12,18 24,13 36,7 56,1 56,28 0,28" fill="rgba(34,197,94,0.08)"/>
+      <polyline class="spark-line" points="0,24 12,18 24,13 36,7 56,1" stroke="#22C55E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </svg>
   </div>
 
-  <div class="kpi-card kpi-card--blue">
-    <div class="kpi-glow kpi-glow--blue" aria-hidden="true"></div>
+  <div class="kpi kpi--blue">
+    <div class="kpi-glow kpi-glow--blue"></div>
     <div class="kpi-icon">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
     </div>
     <div class="kpi-body">
       <span class="kpi-num">{displayPublished}</span>
-      <span class="kpi-label">En ligne</span>
+      <span class="kpi-lbl">Publiés en ligne</span>
     </div>
-    <span class="kpi-chip">Actif</span>
+    <span class="kpi-chip kpi-chip--blue">Actif</span>
   </div>
 
-  <div class="kpi-card kpi-card--amber">
-    <div class="kpi-glow kpi-glow--amber" aria-hidden="true"></div>
+  <div class="kpi kpi--amber">
+    <div class="kpi-glow kpi-glow--amber"></div>
     <div class="kpi-icon">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
     </div>
     <div class="kpi-body">
       <span class="kpi-num">{displayDrafts}</span>
-      <span class="kpi-label">Brouillons</span>
+      <span class="kpi-lbl">Brouillons</span>
     </div>
+    {#if data.drafts > 0}
+      <span class="kpi-chip kpi-chip--amber">À publier</span>
+    {/if}
   </div>
 
-  <a href="/admin/messages" class="kpi-card kpi-card--purple" style="text-decoration:none">
-    <div class="kpi-glow kpi-glow--purple" aria-hidden="true"></div>
+  <a href="/admin/messages" class="kpi kpi--purple" style="text-decoration:none">
+    <div class="kpi-glow kpi-glow--purple"></div>
     <div class="kpi-icon">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
     </div>
     <div class="kpi-body">
       <span class="kpi-num">{displayMessages}</span>
-      <span class="kpi-label">Non lus</span>
+      <span class="kpi-lbl">Messages non lus</span>
     </div>
     {#if data.unreadMessages > 0}
       <span class="kpi-chip kpi-chip--purple">Nouveau</span>
@@ -110,597 +117,476 @@
   </a>
 </div>
 
-<!-- ── Feed événements récents ──────────────────────── -->
-<div class="card">
-  <div class="card-head">
-    <div class="card-head-left">
-      <span class="card-dot" aria-hidden="true"></span>
-      <h2 class="card-title">Événements récents</h2>
-    </div>
-    <a href="/admin/evenements" class="card-link">
-      Voir tout
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
-    </a>
-  </div>
+<!-- ── Grille principale ─────────────────────────── -->
+<div class="content-grid">
 
-  {#if data.recent.length === 0}
-    <div class="empty">
-      <div class="empty-icon">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+  <!-- Colonne gauche : Événements récents -->
+  <section class="card">
+    <div class="card-head">
+      <div class="card-head-left">
+        <span class="card-dot"></span>
+        <h2 class="card-title">Événements récents</h2>
+        <span class="card-count">{data.total}</span>
       </div>
-      <p>Aucun événement pour l'instant.</p>
-      <a href="/admin/evenements/nouveau" class="empty-cta">Créer le premier →</a>
+      <a href="/admin/evenements" class="card-link">
+        Voir tout
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+      </a>
     </div>
-  {:else}
-    {#each data.recent as ev, i}
-      <div class="ev-row" style="--delay:{i * 60}ms">
-        <div class="ev-thumb">
-          {#if ev.images.length > 0}
-            <img src={ev.images[0]} alt="" />
-          {:else}
-            <div class="ev-thumb-ph" aria-hidden="true">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-            </div>
-          {/if}
+
+    {#if data.recent.length === 0}
+      <div class="empty">
+        <div class="empty-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
         </div>
-        <div class="ev-info">
-          <a href="/admin/evenements/{ev.id}" class="ev-title">{ev.title}</a>
-          <div class="ev-meta">
-            <span style="color:{categoryColors[ev.category]}">{categoryLabels[ev.category]}</span>
-            <span class="sep">·</span>
-            <time datetime={ev.date}>{new Date(ev.date).toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'})}</time>
-            <span class="sep">·</span>
-            <span>{ev.images.length} img</span>
+        <p>Aucun événement pour l'instant.</p>
+        <a href="/admin/evenements/nouveau" class="empty-cta">Créer le premier →</a>
+      </div>
+    {:else}
+      {#each data.recent as ev, i}
+        <div class="ev-row" style="--d:{i * 55}ms">
+          <div class="ev-thumb">
+            {#if ev.images.length > 0}
+              <img src={ev.images[0]} alt="" />
+            {:else}
+              <div class="ev-thumb-ph">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              </div>
+            {/if}
+          </div>
+          <div class="ev-info">
+            <a href="/admin/evenements/{ev.id}" class="ev-title">{ev.title}</a>
+            <div class="ev-meta">
+              <span style="color:{categoryColors[ev.category]}">{categoryLabels[ev.category]}</span>
+              <span class="sep">·</span>
+              <time datetime={ev.date}>{new Date(ev.date).toLocaleDateString('fr-FR', { day:'numeric', month:'short', year:'numeric' })}</time>
+            </div>
+          </div>
+          <span class="ev-badge" class:ev-badge--live={ev.published}>
+            {#if ev.published}<span class="badge-dot"></span>{/if}
+            {ev.published ? 'Publié' : 'Brouillon'}
+          </span>
+          <div class="ev-actions">
+            <a href="/admin/evenements/{ev.id}" class="icon-btn" aria-label="Modifier">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </a>
+            {#if ev.published}
+              <a href="/evenements/{ev.id}" target="_blank" class="icon-btn icon-btn--green" aria-label="Voir en ligne">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              </a>
+            {/if}
           </div>
         </div>
-        <span class="ev-badge" class:ev-badge--live={ev.published}>
-          {#if ev.published}<span class="badge-dot" aria-hidden="true"></span>{/if}
-          {ev.published ? 'Publié' : 'Brouillon'}
-        </span>
-        <div class="ev-actions">
-          <a href="/admin/evenements/{ev.id}" class="icon-btn" aria-label="Modifier">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-          </a>
-          {#if ev.published}
-            <a href="/evenements/{ev.id}" target="_blank" class="icon-btn icon-btn--green" aria-label="Voir en ligne">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-            </a>
-          {/if}
+      {/each}
+    {/if}
+  </section>
+
+  <!-- Colonne droite -->
+  <div class="right-col">
+
+    <!-- Actions rapides -->
+    <section class="card card--compact">
+      <div class="card-head">
+        <div class="card-head-left">
+          <span class="card-dot card-dot--blue"></span>
+          <h2 class="card-title">Actions rapides</h2>
         </div>
       </div>
-    {/each}
-  {/if}
-</div>
+      <div class="actions-grid">
+        <a href="/admin/evenements/nouveau" class="action-card action-card--primary">
+          <div class="action-icon action-icon--green">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          </div>
+          <span class="action-lbl">Créer un événement</span>
+          <svg class="action-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+        </a>
+        <a href="/admin/evenements" class="action-card">
+          <div class="action-icon action-icon--amber">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </div>
+          <span class="action-lbl">Gérer les événements</span>
+          <svg class="action-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+        </a>
+        <a href="/admin/messages" class="action-card">
+          <div class="action-icon action-icon--purple">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <span class="action-lbl">Voir les messages</span>
+          {#if data.unreadMessages > 0}
+            <span class="action-badge">{data.unreadMessages}</span>
+          {:else}
+            <svg class="action-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+          {/if}
+        </a>
+        <a href="/" target="_blank" rel="noopener" class="action-card">
+          <div class="action-icon action-icon--blue">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          </div>
+          <span class="action-lbl">Voir le site public</span>
+          <svg class="action-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        </a>
+      </div>
+    </section>
 
-<!-- ── Raccourcis ───────────────────────────────────── -->
-<div class="shortcuts">
-  <a href="/admin/evenements/nouveau" class="shortcut shortcut--primary">
-    <div class="shortcut-icon">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-    </div>
-    <div class="shortcut-text">
-      <strong>Créer un événement</strong>
-      <span>Avec photos + description</span>
-    </div>
-    <svg class="shortcut-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
-  </a>
+    <!-- Derniers messages -->
+    <section class="card card--compact">
+      <div class="card-head">
+        <div class="card-head-left">
+          <span class="card-dot card-dot--purple"></span>
+          <h2 class="card-title">Derniers messages</h2>
+          {#if data.unreadMessages > 0}
+            <span class="card-count card-count--purple">{data.unreadMessages} non lus</span>
+          {/if}
+        </div>
+        <a href="/admin/messages" class="card-link">
+          Voir tout
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+        </a>
+      </div>
 
-  <a href="/evenements" target="_blank" rel="noopener" class="shortcut">
-    <div class="shortcut-icon shortcut-icon--blue">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-    </div>
-    <div class="shortcut-text">
-      <strong>Page publique</strong>
-      <span>Événements en ligne</span>
-    </div>
-    <svg class="shortcut-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
-  </a>
+      {#if data.recentMessages.length === 0}
+        <div class="empty empty--sm">
+          <p>Aucun message reçu.</p>
+        </div>
+      {:else}
+        {#each data.recentMessages as msg}
+          <a href="/admin/messages" class="msg-row" class:msg-row--unread={!msg.read}>
+            <div class="msg-avatar">{msg.name.charAt(0).toUpperCase()}</div>
+            <div class="msg-info">
+              <div class="msg-name">
+                {msg.name}
+                {#if !msg.read}<span class="msg-unread-dot"></span>{/if}
+              </div>
+              <div class="msg-sub">
+                <span class="msg-type">{typeLabels[msg.type] ?? msg.type}</span>
+                <span class="sep">·</span>
+                <time>{new Date(msg.createdAt).toLocaleDateString('fr-FR', { day:'numeric', month:'short' })}</time>
+              </div>
+            </div>
+            <svg class="msg-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+          </a>
+        {/each}
+      {/if}
+    </section>
 
-  <a href="/" target="_blank" rel="noopener" class="shortcut">
-    <div class="shortcut-icon shortcut-icon--amber">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-    </div>
-    <div class="shortcut-text">
-      <strong>Site principal</strong>
-      <span>Accueil EJB</span>
-    </div>
-    <svg class="shortcut-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
-  </a>
+    <!-- Taux de publication -->
+    <section class="card card--compact">
+      <div class="card-head">
+        <div class="card-head-left">
+          <span class="card-dot card-dot--green"></span>
+          <h2 class="card-title">Taux de publication</h2>
+        </div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-row">
+          <span class="stat-lbl">Publiés</span>
+          <span class="stat-val stat-val--green">{data.published}</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill progress-fill--green" style="width:{pubRate}%"></div>
+        </div>
+        <div class="stat-row" style="margin-top:0.75rem">
+          <span class="stat-lbl">Brouillons</span>
+          <span class="stat-val stat-val--amber">{data.drafts}</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill progress-fill--amber" style="width:{data.total > 0 ? 100 - pubRate : 0}%"></div>
+        </div>
+        <p class="stat-note">{pubRate}% des événements sont en ligne</p>
+      </div>
+    </section>
+
+  </div>
 </div>
 
 <style>
-/* ── Animations ── */
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(18px); }
+  from { opacity: 0; transform: translateY(14px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-@keyframes sparkDraw {
-  from { stroke-dashoffset: 200; }
-  to   { stroke-dashoffset: 0; }
-}
-@keyframes sparkFill {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-@keyframes kpiGlowPulse {
-  0%,100% { opacity: 0.3; transform: scale(1); }
-  50%     { opacity: 0.55; transform: scale(1.12); }
-}
+@keyframes sparkDraw { from { stroke-dashoffset: 200; } to { stroke-dashoffset: 0; } }
+@keyframes sparkFadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes glowPulse { 0%,100% { opacity: .3; transform: scale(1); } 50% { opacity: .5; transform: scale(1.1); } }
+@keyframes livePulse { 0%,100% { box-shadow: 0 0 6px rgba(34,197,94,.7); } 50% { box-shadow: 0 0 12px rgba(34,197,94,.3); } }
+@keyframes progressIn { from { width: 0 !important; } }
 
-/* ── Top ── */
+/* ── Page top ── */
 .page-top {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
-  animation: fadeUp 0.45s ease-out both;
-  animation-delay: 0.05s;
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 1rem; margin-bottom: 1.75rem; flex-wrap: wrap;
+  animation: fadeUp .4s ease-out both .05s;
 }
-.top-greeting {
-  font-size: 0.8125rem;
-  color: rgba(255,255,255,0.35);
-  margin-bottom: 0.3rem;
-  font-weight: 500;
-}
-.top-title {
-  font-size: 1.875rem;
-  font-weight: 800;
-  color: #fff;
-  letter-spacing: -0.025em;
-  line-height: 1;
-  margin-bottom: 0.5rem;
-}
-.title-line {
-  width: 40px;
-  height: 3px;
-  border-radius: 2px;
-  background: linear-gradient(90deg, #22C55E, transparent);
-}
+.greeting { font-size: .8125rem; color: rgba(255,255,255,.32); margin-bottom: .25rem; font-weight: 500; }
+.title { font-size: 1.75rem; font-weight: 800; color: #fff; letter-spacing: -.025em; line-height: 1; margin-bottom: .4rem; }
+.title-bar { width: 36px; height: 3px; border-radius: 2px; background: linear-gradient(90deg,#22C55E,transparent); }
 
 .cta-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.65rem 1.3rem;
-  background: #22C55E;
-  color: #052e16;
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
-  font-weight: 700;
-  text-decoration: none;
-  transition: all 200ms ease;
-  white-space: nowrap;
-  position: relative;
-  overflow: hidden;
+  display: inline-flex; align-items: center; gap: .4rem;
+  padding: .6rem 1.2rem;
+  background: #22C55E; color: #052e16;
+  border-radius: .5rem; font-size: .875rem; font-weight: 700;
+  text-decoration: none; transition: all 200ms; white-space: nowrap;
 }
-.cta-btn::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
-  opacity: 0;
-  transition: opacity 200ms;
-}
-.cta-btn:hover {
-  background: #16a34a;
-  color: #fff;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 24px rgba(34,197,94,0.38), 0 2px 8px rgba(0,0,0,0.3);
-}
-.cta-btn:hover::before { opacity: 1; }
-.cta-btn:active { transform: translateY(0); }
-.cta-icon { display: flex; align-items: center; }
+.cta-btn:hover { background: #16a34a; color: #fff; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(34,197,94,.35); }
+.cta-btn svg { flex-shrink: 0; }
 
 /* ── KPI ── */
 .kpi-row {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0.875rem;
-  margin-bottom: 1.5rem;
+  display: grid; grid-template-columns: repeat(4,1fr);
+  gap: .75rem; margin-bottom: 1.5rem;
 }
-
-.kpi-card {
-  background: rgba(22,42,28,0.97);
-  border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 1rem;
-  padding: 1.375rem;
-  display: flex;
-  align-items: center;
-  gap: 0.875rem;
-  position: relative;
-  overflow: hidden;
-  transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
-  animation: fadeUp 0.45s ease-out both;
+.kpi {
+  background: rgba(20,40,26,.97);
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: .875rem;
+  padding: 1.125rem 1.25rem;
+  display: flex; align-items: center; gap: .75rem;
+  position: relative; overflow: hidden;
+  transition: transform 220ms, box-shadow 220ms;
+  animation: fadeUp .4s ease-out both;
+  text-decoration: none;
 }
-.kpi-card:nth-child(1) { animation-delay: 0.18s; }
-.kpi-card:nth-child(2) { animation-delay: 0.26s; }
-.kpi-card:nth-child(3) { animation-delay: 0.34s; }
+.kpi:nth-child(1) { animation-delay: .15s; }
+.kpi:nth-child(2) { animation-delay: .22s; }
+.kpi:nth-child(3) { animation-delay: .29s; }
+.kpi:nth-child(4) { animation-delay: .36s; }
+.kpi:hover { transform: translateY(-3px); }
 
-.kpi-card:hover {
-  transform: translateY(-3px);
-}
-.kpi-card--green  { border-top: 2px solid rgba(34,197,94,0.7); }
-.kpi-card--blue   { border-top: 2px solid rgba(56,189,248,0.7); }
-.kpi-card--amber  { border-top: 2px solid rgba(251,191,36,0.7); }
-.kpi-card--purple { border-top: 2px solid rgba(168,85,247,0.7); cursor: pointer; }
+.kpi--green  { border-top: 2px solid rgba(34,197,94,.65); }
+.kpi--blue   { border-top: 2px solid rgba(56,189,248,.65); }
+.kpi--amber  { border-top: 2px solid rgba(251,191,36,.65); }
+.kpi--purple { border-top: 2px solid rgba(168,85,247,.65); cursor: pointer; }
+.kpi--green:hover  { box-shadow: 0 8px 28px rgba(34,197,94,.16); }
+.kpi--blue:hover   { box-shadow: 0 8px 28px rgba(56,189,248,.14); }
+.kpi--amber:hover  { box-shadow: 0 8px 28px rgba(251,191,36,.14); }
+.kpi--purple:hover { box-shadow: 0 8px 28px rgba(168,85,247,.16); }
 
-.kpi-card--green:hover  { box-shadow: 0 8px 32px rgba(34,197,94,0.18), 0 0 0 1px rgba(34,197,94,0.15); border-top-color: #22C55E; }
-.kpi-card--blue:hover   { box-shadow: 0 8px 32px rgba(56,189,248,0.15), 0 0 0 1px rgba(56,189,248,0.12); border-top-color: #38BDF8; }
-.kpi-card--amber:hover  { box-shadow: 0 8px 32px rgba(251,191,36,0.15), 0 0 0 1px rgba(251,191,36,0.12); border-top-color: #FBBF24; }
-.kpi-card--purple:hover { box-shadow: 0 8px 32px rgba(168,85,247,0.18), 0 0 0 1px rgba(168,85,247,0.15); border-top-color: #a855f7; }
-
-/* Inner ambient glow */
 .kpi-glow {
-  position: absolute;
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  top: -40px;
-  right: -20px;
-  pointer-events: none;
-  animation: kpiGlowPulse 4s ease-in-out infinite;
+  position: absolute; width: 110px; height: 110px; border-radius: 50%;
+  top: -35px; right: -18px; pointer-events: none;
+  animation: glowPulse 4s ease-in-out infinite;
 }
-.kpi-glow--green  { background: radial-gradient(circle, rgba(34,197,94,0.18), transparent 70%); }
-.kpi-glow--blue   { background: radial-gradient(circle, rgba(56,189,248,0.15), transparent 70%); }
-.kpi-glow--amber  { background: radial-gradient(circle, rgba(251,191,36,0.14), transparent 70%); }
-.kpi-glow--purple { background: radial-gradient(circle, rgba(168,85,247,0.18), transparent 70%); }
+.kpi-glow--green  { background: radial-gradient(circle,rgba(34,197,94,.16),transparent 70%); }
+.kpi-glow--blue   { background: radial-gradient(circle,rgba(56,189,248,.14),transparent 70%); }
+.kpi-glow--amber  { background: radial-gradient(circle,rgba(251,191,36,.13),transparent 70%); }
+.kpi-glow--purple { background: radial-gradient(circle,rgba(168,85,247,.16),transparent 70%); }
 
 .kpi-icon {
-  width: 44px; height: 44px;
-  border-radius: 0.75rem;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-  position: relative;
-  z-index: 1;
+  width: 40px; height: 40px; border-radius: .625rem;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0; position: relative; z-index: 1;
 }
-.kpi-card--green  .kpi-icon { background: rgba(34,197,94,0.12);  color: #22C55E; box-shadow: 0 0 0 1px rgba(34,197,94,0.2); }
-.kpi-card--blue   .kpi-icon { background: rgba(56,189,248,0.12);  color: #38BDF8; box-shadow: 0 0 0 1px rgba(56,189,248,0.2); }
-.kpi-card--amber  .kpi-icon { background: rgba(251,191,36,0.12);  color: #FBBF24; box-shadow: 0 0 0 1px rgba(251,191,36,0.2); }
-.kpi-card--purple .kpi-icon { background: rgba(168,85,247,0.12);  color: #c084fc; box-shadow: 0 0 0 1px rgba(168,85,247,0.2); }
+.kpi--green  .kpi-icon { background: rgba(34,197,94,.1);  color: #22C55E; box-shadow: 0 0 0 1px rgba(34,197,94,.2); }
+.kpi--blue   .kpi-icon { background: rgba(56,189,248,.1);  color: #38BDF8; box-shadow: 0 0 0 1px rgba(56,189,248,.2); }
+.kpi--amber  .kpi-icon { background: rgba(251,191,36,.1);  color: #FBBF24; box-shadow: 0 0 0 1px rgba(251,191,36,.2); }
+.kpi--purple .kpi-icon { background: rgba(168,85,247,.1);  color: #c084fc; box-shadow: 0 0 0 1px rgba(168,85,247,.2); }
 
-.kpi-num {
-  display: block;
-  font-size: 2.375rem;
-  font-weight: 800;
-  color: #fff;
-  line-height: 1;
-  letter-spacing: -0.04em;
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  position: relative;
-  z-index: 1;
-}
-.kpi-label {
-  display: block;
-  font-size: 0.75rem;
-  color: rgba(255,255,255,0.35);
-  margin-top: 4px;
-  font-weight: 500;
-  position: relative;
-  z-index: 1;
-}
+.kpi-body { flex: 1; min-width: 0; position: relative; z-index: 1; }
+.kpi-num { display: block; font-size: 2.25rem; font-weight: 800; color: #fff; line-height: 1; letter-spacing: -.04em; font-family: 'Cormorant Garamond',Georgia,serif; }
+.kpi-lbl { display: block; font-size: .6875rem; color: rgba(255,255,255,.3); margin-top: 3px; font-weight: 500; }
 
-.kpi-spark {
-  margin-left: auto;
-  flex-shrink: 0;
-  position: relative;
-  z-index: 1;
-}
-.spark-line {
-  stroke-dasharray: 200;
-  stroke-dashoffset: 200;
-  animation: sparkDraw 1.2s ease-out 0.7s both;
-}
-.spark-fill {
-  animation: sparkFill 0.8s ease-out 1.2s both;
-  opacity: 0;
-}
+.kpi-spark { flex-shrink: 0; position: relative; z-index: 1; }
+.spark-line { stroke-dasharray: 200; stroke-dashoffset: 200; animation: sparkDraw 1.2s ease-out .7s both; }
+.spark-fill { animation: sparkFadeIn .8s ease-out 1.2s both; opacity: 0; }
 
 .kpi-chip {
-  margin-left: auto;
-  font-size: 0.625rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: #22C55E;
-  background: rgba(34,197,94,0.1);
-  border: 1px solid rgba(34,197,94,0.22);
-  border-radius: 100px;
-  padding: 3px 10px;
-  position: relative;
-  z-index: 1;
+  flex-shrink: 0; font-size: .5625rem; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; border-radius: 100px; padding: 3px 9px;
+  position: relative; z-index: 1;
 }
-.kpi-chip--purple {
-  color: #d8b4fe;
-  background: rgba(168,85,247,0.12);
-  border-color: rgba(168,85,247,0.28);
-  animation: chipPulse 2s ease-in-out infinite;
-}
-@keyframes chipPulse {
-  0%,100% { box-shadow: 0 0 0 0 rgba(168,85,247,0.3); }
-  50%     { box-shadow: 0 0 0 4px rgba(168,85,247,0.05); }
+.kpi-chip--blue   { color: #38BDF8; background: rgba(56,189,248,.1);  border: 1px solid rgba(56,189,248,.22); }
+.kpi-chip--amber  { color: #FBBF24; background: rgba(251,191,36,.1);  border: 1px solid rgba(251,191,36,.22); }
+.kpi-chip--purple { color: #d8b4fe; background: rgba(168,85,247,.12); border: 1px solid rgba(168,85,247,.28); }
+
+/* ── Content grid ── */
+.content-grid {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 1rem;
+  align-items: start;
 }
 
 /* ── Card ── */
 .card {
-  background: rgba(22,42,28,0.97);
-  border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 1rem;
-  overflow: hidden;
-  margin-bottom: 1.5rem;
-  animation: fadeUp 0.45s ease-out 0.42s both;
+  background: rgba(20,40,26,.97);
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: .875rem; overflow: hidden;
+  animation: fadeUp .4s ease-out .38s both;
 }
+.card--compact { animation-delay: .44s; }
+.card + .card { margin-top: 1rem; }
 
 .card-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem 1.375rem;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: .875rem 1.25rem;
+  border-bottom: 1px solid rgba(255,255,255,.04);
 }
-.card-head-left { display: flex; align-items: center; gap: 0.5rem; }
+.card-head-left { display: flex; align-items: center; gap: .4rem; }
+
 .card-dot {
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  background: #22C55E;
-  box-shadow: 0 0 6px rgba(34,197,94,0.7);
+  width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+  background: #22C55E; box-shadow: 0 0 6px rgba(34,197,94,.7);
   animation: livePulse 2.2s ease-in-out infinite;
 }
-@keyframes livePulse {
-  0%,100% { box-shadow: 0 0 6px rgba(34,197,94,0.7); }
-  50%     { box-shadow: 0 0 12px rgba(34,197,94,0.3); }
+.card-dot--blue   { background: #38BDF8; box-shadow: 0 0 6px rgba(56,189,248,.7); animation: none; }
+.card-dot--purple { background: #a855f7; box-shadow: 0 0 6px rgba(168,85,247,.7); animation: none; }
+.card-dot--green  { background: #22C55E; }
+
+.card-title { font-size: .875rem; font-weight: 700; color: #fff; }
+.card-count {
+  font-size: .6875rem; font-weight: 700; padding: 2px 8px;
+  border-radius: 100px; background: rgba(34,197,94,.1);
+  color: #4ade80; border: 1px solid rgba(34,197,94,.2);
 }
-.card-title {
-  font-size: 0.9375rem;
-  font-weight: 700;
-  color: #fff;
-}
+.card-count--purple { background: rgba(168,85,247,.1); color: #d8b4fe; border-color: rgba(168,85,247,.2); }
+
 .card-link {
-  font-size: 0.8125rem;
-  color: #22C55E;
-  text-decoration: none;
-  opacity: 0.75;
+  font-size: .75rem; color: #22C55E; text-decoration: none; opacity: .7;
+  display: inline-flex; align-items: center; gap: .25rem;
   transition: opacity 150ms, gap 150ms;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
 }
-.card-link:hover { opacity: 1; gap: 0.4rem; }
+.card-link:hover { opacity: 1; gap: .375rem; }
 
 /* Empty */
-.empty {
-  padding: 3.5rem 1.5rem;
-  text-align: center;
-  color: rgba(255,255,255,0.28);
-}
+.empty { padding: 2.5rem 1.25rem; text-align: center; color: rgba(255,255,255,.25); }
+.empty--sm { padding: 1.25rem; }
 .empty-icon {
-  width: 64px; height: 64px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.07);
-  display: flex; align-items: center; justify-content: center;
-  margin: 0 auto 1rem;
-  animation: emptyPulse 3s ease-in-out infinite;
+  width: 52px; height: 52px; border-radius: 50%;
+  background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.06);
+  display: flex; align-items: center; justify-content: center; margin: 0 auto .75rem;
 }
-@keyframes emptyPulse {
-  0%,100% { box-shadow: 0 0 0 0 rgba(255,255,255,0.04); }
-  50%     { box-shadow: 0 0 0 8px rgba(255,255,255,0.01); }
-}
-.empty p { font-size: 0.875rem; margin-bottom: 1rem; }
-.empty-cta {
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: #22C55E;
-  text-decoration: none;
-  transition: opacity 150ms;
-}
-.empty-cta:hover { opacity: 0.8; }
+.empty p { font-size: .8125rem; margin-bottom: .75rem; }
+.empty-cta { font-size: .75rem; font-weight: 600; color: #22C55E; text-decoration: none; }
 
-/* Rows */
+/* Event rows */
 .ev-row {
-  display: flex;
-  align-items: center;
-  gap: 0.875rem;
-  padding: 0.875rem 1.375rem;
-  border-bottom: 1px solid rgba(255,255,255,0.04);
-  transition: background 150ms ease;
-  animation: fadeUp 0.4s ease-out both;
-  animation-delay: calc(0.5s + var(--delay, 0ms));
+  display: flex; align-items: center; gap: .75rem;
+  padding: .75rem 1.25rem;
+  border-bottom: 1px solid rgba(255,255,255,.035);
+  transition: background 140ms;
+  animation: fadeUp .35s ease-out both;
+  animation-delay: calc(.48s + var(--d, 0ms));
   position: relative;
 }
 .ev-row::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background: #22C55E;
-  transform: scaleY(0);
-  transform-origin: center;
-  transition: transform 200ms ease;
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+  width: 2px; background: #22C55E; transform: scaleY(0);
+  transform-origin: center; transition: transform 180ms;
   border-radius: 0 2px 2px 0;
 }
 .ev-row:last-child { border-bottom: none; }
-.ev-row:hover { background: rgba(255,255,255,0.028); }
-.ev-row:hover::before { transform: scaleY(0.7); }
+.ev-row:hover { background: rgba(255,255,255,.025); }
+.ev-row:hover::before { transform: scaleY(.65); }
 
-.ev-thumb {
-  width: 50px; height: 42px;
-  border-radius: 0.5rem;
-  overflow: hidden;
-  flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-}
-.ev-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 300ms ease; }
-.ev-row:hover .ev-thumb img { transform: scale(1.06); }
-.ev-thumb-ph {
-  width: 100%; height: 100%;
-  background: rgba(255,255,255,0.04);
-  display: flex; align-items: center; justify-content: center;
-  color: rgba(255,255,255,0.2);
-}
+.ev-thumb { width: 46px; height: 38px; border-radius: .4rem; overflow: hidden; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,.4); }
+.ev-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 280ms; }
+.ev-row:hover .ev-thumb img { transform: scale(1.07); }
+.ev-thumb-ph { width: 100%; height: 100%; background: rgba(255,255,255,.04); display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,.18); }
 
 .ev-info { flex: 1; min-width: 0; }
-.ev-title {
-  display: block;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #fff;
-  text-decoration: none;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin-bottom: 3px;
-  transition: color 140ms;
-}
+.ev-title { display: block; font-size: .8125rem; font-weight: 600; color: #fff; text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; transition: color 130ms; }
 .ev-title:hover { color: #22C55E; }
-.ev-meta {
-  font-size: 0.6875rem;
-  color: rgba(255,255,255,0.28);
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-}
-.sep { opacity: 0.3; }
+.ev-meta { font-size: .625rem; color: rgba(255,255,255,.26); display: flex; align-items: center; gap: .25rem; }
+.sep { opacity: .3; }
 
-.ev-badge {
-  flex-shrink: 0;
-  font-size: 0.625rem;
-  font-weight: 700;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  padding: 3px 9px;
-  border-radius: 100px;
-  background: rgba(251,191,36,0.08);
-  color: #FBBF24;
-  border: 1px solid rgba(251,191,36,0.18);
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-}
-.ev-badge--live {
-  background: rgba(34,197,94,0.08);
-  color: #22C55E;
-  border-color: rgba(34,197,94,0.2);
-}
-.badge-dot {
-  width: 5px; height: 5px;
-  border-radius: 50%;
-  background: #22C55E;
-  box-shadow: 0 0 5px rgba(34,197,94,0.7);
-  animation: livePulse 2s ease-in-out infinite;
-}
+.ev-badge { flex-shrink: 0; font-size: .5625rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; padding: 2px 8px; border-radius: 100px; background: rgba(251,191,36,.08); color: #FBBF24; border: 1px solid rgba(251,191,36,.18); display: inline-flex; align-items: center; gap: 4px; }
+.ev-badge--live { background: rgba(34,197,94,.08); color: #22C55E; border-color: rgba(34,197,94,.2); }
+.badge-dot { width: 5px; height: 5px; border-radius: 50%; background: #22C55E; box-shadow: 0 0 5px rgba(34,197,94,.7); animation: livePulse 2s ease-in-out infinite; }
 
-.ev-actions { display: flex; gap: 4px; flex-shrink: 0; }
-.icon-btn {
-  width: 30px; height: 30px;
-  border-radius: 0.375rem;
-  display: flex; align-items: center; justify-content: center;
-  color: rgba(255,255,255,0.28);
+.ev-actions { display: flex; gap: 3px; flex-shrink: 0; }
+.icon-btn { width: 28px; height: 28px; border-radius: .325rem; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,.25); text-decoration: none; transition: all 140ms; }
+.icon-btn:hover { background: rgba(255,255,255,.07); color: #fff; }
+.icon-btn--green { color: rgba(34,197,94,.4); }
+.icon-btn--green:hover { background: rgba(34,197,94,.1); color: #22C55E; }
+
+/* ── Actions rapides ── */
+.actions-grid { display: flex; flex-direction: column; }
+.action-card {
+  display: flex; align-items: center; gap: .75rem;
+  padding: .75rem 1.25rem;
   text-decoration: none;
-  transition: all 150ms ease;
-}
-.icon-btn:hover { background: rgba(255,255,255,0.08); color: #fff; }
-.icon-btn--green { color: rgba(34,197,94,0.4); }
-.icon-btn--green:hover { background: rgba(34,197,94,0.1); color: #22C55E; }
-
-/* ── Shortcuts ── */
-.shortcuts {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  animation: fadeUp 0.45s ease-out 0.6s both;
-}
-
-.shortcut {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem 1.25rem;
-  background: rgba(22,42,28,0.97);
-  border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 0.875rem;
-  text-decoration: none;
-  transition: all 220ms ease;
+  border-bottom: 1px solid rgba(255,255,255,.035);
+  transition: background 140ms;
   position: relative;
-  overflow: hidden;
 }
-.shortcut::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent);
-  transform: translateX(-100%);
-  transition: transform 450ms ease;
-}
-.shortcut:hover::after { transform: translateX(100%); }
-.shortcut:hover {
-  background: rgba(26,50,32,0.99);
-  border-color: rgba(255,255,255,0.12);
-  transform: translateX(5px);
-  box-shadow: 0 4px 20px rgba(0,0,0,0.25);
-}
-.shortcut--primary { border-color: rgba(34,197,94,0.18); }
-.shortcut--primary:hover {
-  background: rgba(34,197,94,0.06);
-  border-color: rgba(34,197,94,0.32);
-  box-shadow: 0 4px 20px rgba(34,197,94,0.1);
-}
+.action-card:last-child { border-bottom: none; }
+.action-card:hover { background: rgba(255,255,255,.025); }
+.action-card--primary { }
+.action-card--primary:hover { background: rgba(34,197,94,.05); }
 
-.shortcut-icon {
-  width: 42px; height: 42px;
-  border-radius: 0.75rem;
-  background: rgba(34,197,94,0.1);
-  color: #22C55E;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-  box-shadow: 0 0 0 1px rgba(34,197,94,0.18);
-  transition: transform 220ms ease, box-shadow 220ms ease;
-}
-.shortcut:hover .shortcut-icon { transform: scale(1.08); box-shadow: 0 0 12px rgba(34,197,94,0.25); }
+.action-icon { width: 34px; height: 34px; border-radius: .5rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.action-icon--green  { background: rgba(34,197,94,.1);  color: #22C55E; box-shadow: 0 0 0 1px rgba(34,197,94,.18); }
+.action-icon--amber  { background: rgba(251,191,36,.1);  color: #FBBF24; box-shadow: 0 0 0 1px rgba(251,191,36,.18); }
+.action-icon--purple { background: rgba(168,85,247,.1);  color: #c084fc; box-shadow: 0 0 0 1px rgba(168,85,247,.18); }
+.action-icon--blue   { background: rgba(56,189,248,.1);  color: #38BDF8; box-shadow: 0 0 0 1px rgba(56,189,248,.18); }
 
-.shortcut-icon--blue  { background: rgba(56,189,248,0.1);  color: #38BDF8; box-shadow: 0 0 0 1px rgba(56,189,248,0.18); }
-.shortcut:hover .shortcut-icon--blue  { box-shadow: 0 0 12px rgba(56,189,248,0.22); }
-.shortcut-icon--amber { background: rgba(251,191,36,0.1);  color: #FBBF24; box-shadow: 0 0 0 1px rgba(251,191,36,0.18); }
-.shortcut:hover .shortcut-icon--amber { box-shadow: 0 0 12px rgba(251,191,36,0.2); }
+.action-lbl { flex: 1; font-size: .8125rem; font-weight: 500; color: rgba(255,255,255,.75); transition: color 140ms; }
+.action-card:hover .action-lbl { color: #fff; }
 
-.shortcut-text strong {
-  display: block;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #fff;
-  margin-bottom: 2px;
-}
-.shortcut-text span {
-  font-size: 0.75rem;
-  color: rgba(255,255,255,0.32);
-}
+.action-arrow { color: rgba(255,255,255,.2); flex-shrink: 0; transition: transform 150ms, color 150ms; }
+.action-card:hover .action-arrow { color: rgba(255,255,255,.5); transform: translateX(3px); }
 
-.shortcut-arrow {
-  margin-left: auto;
-  color: rgba(255,255,255,0.18);
-  flex-shrink: 0;
-  transition: color 200ms ease, transform 200ms ease;
-}
-.shortcut:hover .shortcut-arrow {
-  color: rgba(255,255,255,0.55);
-  transform: translateX(4px);
-}
+.action-badge { flex-shrink: 0; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 100px; background: #a855f7; color: #fff; font-size: .625rem; font-weight: 800; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 8px rgba(168,85,247,.5); }
 
-@media (prefers-reduced-motion: reduce) {
-  .kpi-card, .page-top, .card, .shortcuts, .ev-row { animation: none; }
-  .spark-line { animation: none; stroke-dashoffset: 0; }
-  .spark-fill { animation: none; opacity: 1; }
-  .kpi-glow { animation: none; }
-  .card-dot, .badge-dot { animation: none; }
+/* ── Messages ── */
+.msg-row {
+  display: flex; align-items: center; gap: .75rem;
+  padding: .75rem 1.25rem;
+  border-bottom: 1px solid rgba(255,255,255,.035);
+  text-decoration: none;
+  transition: background 140ms;
 }
+.msg-row:last-child { border-bottom: none; }
+.msg-row:hover { background: rgba(255,255,255,.025); }
+.msg-row--unread { background: rgba(168,85,247,.04); }
 
-@media (max-width: 900px) {
-  .kpi-row { grid-template-columns: repeat(2, 1fr); }
+.msg-avatar {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: rgba(168,85,247,.15); color: #c084fc;
+  font-size: .875rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  box-shadow: 0 0 0 1.5px rgba(168,85,247,.25);
+}
+.msg-info { flex: 1; min-width: 0; }
+.msg-name { font-size: .8125rem; font-weight: 600; color: #fff; display: flex; align-items: center; gap: .3rem; margin-bottom: 2px; }
+.msg-unread-dot { width: 6px; height: 6px; border-radius: 50%; background: #a855f7; box-shadow: 0 0 5px rgba(168,85,247,.7); flex-shrink: 0; }
+.msg-sub { font-size: .625rem; color: rgba(255,255,255,.28); display: flex; align-items: center; gap: .25rem; }
+.msg-type { color: rgba(168,85,247,.8); font-weight: 600; }
+.msg-arrow { color: rgba(255,255,255,.2); flex-shrink: 0; transition: transform 150ms, color 150ms; }
+.msg-row:hover .msg-arrow { color: rgba(255,255,255,.5); transform: translateX(2px); }
+
+/* ── Stat block ── */
+.stat-block { padding: .875rem 1.25rem 1rem; }
+.stat-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: .375rem; }
+.stat-lbl { font-size: .75rem; color: rgba(255,255,255,.4); font-weight: 500; }
+.stat-val { font-size: .875rem; font-weight: 700; }
+.stat-val--green { color: #4ade80; }
+.stat-val--amber { color: #FBBF24; }
+
+.progress-bar { height: 5px; background: rgba(255,255,255,.06); border-radius: 100px; overflow: hidden; margin-bottom: .25rem; }
+.progress-fill { height: 100%; border-radius: 100px; animation: progressIn .9s cubic-bezier(.4,0,.2,1) .6s both; }
+.progress-fill--green { background: linear-gradient(90deg,#22C55E,#4ade80); }
+.progress-fill--amber { background: linear-gradient(90deg,#d97706,#FBBF24); }
+
+.stat-note { font-size: .6875rem; color: rgba(255,255,255,.22); margin-top: .875rem; text-align: center; }
+
+/* ── Responsive ── */
+@media (max-width: 1050px) {
+  .content-grid { grid-template-columns: 1fr; }
+  .right-col { display: grid; grid-template-columns: repeat(2,1fr); gap: 1rem; }
+  .right-col .card + .card { margin-top: 0; }
+}
+@media (max-width: 700px) {
+  .kpi-row { grid-template-columns: repeat(2,1fr); }
+  .right-col { grid-template-columns: 1fr; }
 }
 @media (max-width: 400px) {
   .kpi-row { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .kpi, .page-top, .card, .ev-row { animation: none; }
+  .spark-line { stroke-dashoffset: 0; animation: none; }
+  .spark-fill { opacity: 1; animation: none; }
+  .kpi-glow, .card-dot, .badge-dot { animation: none; }
+  .progress-fill { animation: none; }
 }
 </style>

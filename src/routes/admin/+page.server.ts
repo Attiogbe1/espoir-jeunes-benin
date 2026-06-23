@@ -7,15 +7,17 @@ import { COOKIE_NAME } from '$lib/server/auth.js';
 export const load: PageServerLoad = () => {
   const events   = readEvents();
   const messages = readMessages();
+  const sorted   = [...events].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   return {
-    total:     events.length,
-    published: events.filter(e => e.published).length,
-    drafts:    events.filter(e => !e.published).length,
-    recent:    events
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-      .slice(0, 5),
+    total:          events.length,
+    published:      events.filter(e => e.published).length,
+    drafts:         events.filter(e => !e.published).length,
+    recent:         sorted.slice(0, 5),
     unreadMessages: messages.filter(m => !m.read).length,
     totalMessages:  messages.length,
+    recentMessages: [...messages]
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, 3),
   };
 };
 
